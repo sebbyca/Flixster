@@ -61,12 +61,14 @@ public class MoreInfoActivity extends AppCompatActivity {
 
         // By default phone is in portrait and therefore we use backdrop image
         String imageUrl = movie.getBackdropPath();
+        int placeholder = R.drawable.flicks_backdrop_placeholder;
 
         // If phone is in landscape, set imageUrl to poster image
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             imageUrl = movie.getPosterPath();
+            placeholder = R.drawable.flicks_movie_placeholder;
         }
-        Glide.with(this).load(imageUrl).into(ivPoster);
+        Glide.with(this).load(imageUrl).placeholder(placeholder).into(ivPoster);
 
         List<Integer> moviesGenres = movie.getGenres();
         String g = "";

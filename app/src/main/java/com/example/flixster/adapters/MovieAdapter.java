@@ -84,13 +84,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
             // By default phone is in portrait and therefore we use poster image
             String imageUrl = movie.getPosterPath();
+            int placeholder = R.drawable.flicks_movie_placeholder;
 
             // If phone is in landscape, set imageUrl to back drop image
             if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 imageUrl = movie.getBackdropPath();
+                placeholder = R.drawable.flicks_backdrop_placeholder;
             }
 
-            Glide.with(context).load(imageUrl).into(ivPoster);
+            Glide.with(context).load(imageUrl).placeholder(placeholder).into(ivPoster);
         }
 
         // When the user clicks on a row, show MoreInfoActivity for the selected movie
