@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.flixster.MainActivity;
 import com.example.flixster.MoreInfoActivity;
 import com.example.flixster.R;
 import com.example.flixster.models.Movie;
@@ -21,15 +22,18 @@ import com.example.flixster.models.Movie;
 import org.parceler.Parcels;
 
 import java.util.List;
+import java.util.Map;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
     Context context;
     List<Movie> movies;
+    Map<Integer, String> genres;
 
-    public MovieAdapter(Context context, List<Movie> movies) {
+    public MovieAdapter(Context context, List<Movie> movies, Map<Integer, String> genres) {
         this.context = context;
         this.movies = movies;
+        this.genres = genres;
     }
 
     // Usually involves inflating a layout from XML and returning the holder
@@ -48,7 +52,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         // Get the movie at the passed in position
         Movie movie = movies.get(position);
 
-        // Bind th movie data into the VH
+        // Bind the movie data into the VH
         holder.bind(movie);
     }
 
@@ -105,6 +109,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
                 // Serialize the movie using parceler, use its short name as a key
                 intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
+                intent.putExtra(MainActivity.GENRES, Parcels.wrap(genres));
 
                 // Display the activity
                 context.startActivity(intent);

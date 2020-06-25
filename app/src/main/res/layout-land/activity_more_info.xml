@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,13 +7,25 @@
     tools:context=".MoreInfoActivity">
 
     <TextView
+        android:id="@+id/tvGenre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvTitle"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/ivPoster"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textStyle="italic"
+        tools:text="Action, Science Fiction" />
+
+    <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivPoster"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/ivPoster"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,59 +34,48 @@
         tools:layout_editor_absoluteY="105dp"
         tools:text="Bloodshot" />
 
-    <ImageView
-        android:id="@+id/ivPoster"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvGenre"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        tools:text="Release Date: 2020-03-05" />
-
     <RatingBar
         android:id="@+id/rbVoteAverage"
         style="@android:style/Widget.DeviceDefault.RatingBar.Indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvDate"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="1dp"
+        android:layout_marginStart="9dp"
         android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/ivPoster"
         android:numStars="5"
         android:stepSize="0.5" />
+
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvGenre"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/ivPoster"
+        tools:text="Release Date: 2020-03-05" />
 
     <TextView
         android:id="@+id/tvOverview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/rbVoteAverage"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="1dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="9dp"
         android:layout_marginTop="0dp"
+        android:layout_marginEnd="-4dp"
+        android:layout_toEndOf="@+id/ivPoster"
         tools:text="After he and his wife are murdered, marine Ray Garrison is resurrected by a team of scientists. Enhanced with nanotechnology, he becomes a superhuman, biotech killing machine—'Bloodshot'. As Ray first trains with fellow super-soldiers, he cannot recall anything from his former life. But when his memories flood back and he remembers the man that killed both him and his wife, he breaks out of the facility to get revenge, only to discover that there's more to the conspiracy than he thought." />
 
-    <TextView
-        android:id="@+id/tvGenre"
+    <ImageView
+        android:id="@+id/ivPoster"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvTitle"
+        android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="-1dp"
         android:layout_marginTop="0dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textStyle="italic"
-        tools:text="Action, Science Fiction" />
+        tools:srcCompat="@tools:sample/avatars" />
 
 </RelativeLayout>
