@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.flixster.MainActivity;
 import com.example.flixster.MoreInfoActivity;
 import com.example.flixster.R;
 import com.example.flixster.models.Movie;
@@ -22,18 +21,17 @@ import com.example.flixster.models.Movie;
 import org.parceler.Parcels;
 
 import java.util.List;
-import java.util.Map;
+
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
     Context context;
     List<Movie> movies;
-    Map<Integer, String> genres;
 
-    public MovieAdapter(Context context, List<Movie> movies, Map<Integer, String> genres) {
+    public MovieAdapter(Context context, List<Movie> movies) {
         this.context = context;
         this.movies = movies;
-        this.genres = genres;
     }
 
     // Usually involves inflating a layout from XML and returning the holder
@@ -92,7 +90,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                 placeholder = R.drawable.flicks_backdrop_placeholder;
             }
 
-            Glide.with(context).load(imageUrl).placeholder(placeholder).into(ivPoster);
+            int radius = 30; // corner radius, higher value = more rounded
+            int margin = 10; // crop margin, set to 0 for corners with no crop
+            Glide.with(context).load(imageUrl).placeholder(placeholder).transform(new RoundedCornersTransformation(radius, margin)).into(ivPoster);
         }
 
         // When the user clicks on a row, show MoreInfoActivity for the selected movie
@@ -111,7 +111,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
                 // Serialize the movie using parceler, use its short name as a key
                 intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
-                intent.putExtra(MainActivity.GENRES, Parcels.wrap(genres));
 
                 // Display the activity
                 context.startActivity(intent);

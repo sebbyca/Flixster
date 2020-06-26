@@ -12,28 +12,26 @@ import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.example.flixster.adapters.MovieAdapter;
 import com.example.flixster.models.Movie;
+import com.example.flixster.models.MovieDatabaseClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.Headers;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String GENRES = "item_text";
 
-    public static final String NOW_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
-    public static final String GENRE_LIST = "https://api.themoviedb.org/3/genre/movie/list?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed&language=en-US";
+    public static final String NOW_PLAYING_URL = "now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
     public static final String TAG = "MainActivity";
 
+    public static final String API_KEY = "?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed&language=en-US";
+
     List<Movie> movies;
-    Map<Integer, String> genres;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +39,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         RecyclerView rvMovies = findViewById(R.id.rvMovies);
         movies = new ArrayList<>();
-        genres = new HashMap<>();
 
         // Create the adapter
-        final MovieAdapter movieAdapter = new MovieAdapter(this, movies, genres);
+        final MovieAdapter movieAdapter = new MovieAdapter(this, movies);
 
         // Set the adapter on the recycler view
         rvMovies.setAdapter(movieAdapter);
@@ -52,35 +49,8 @@ public class MainActivity extends AppCompatActivity {
         // Set a Layout Manager on the recycler view
         rvMovies.setLayoutManager(new LinearLayoutManager(this));
 
-
-        AsyncHttpClient client = new AsyncHttpClient();
-
-        // Retrieval of genres lists
-        client.get(GENRE_LIST, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                Log.d(TAG, "Successful retrieval of 'Genre List'");
-                JSONObject jsonObject = json.jsonObject;
-                try {
-                    JSONArray results = jsonObject.getJSONArray("genres");
-                    for (int i = 0; i < results.length(); i++) {
-                        JSONObject id_pair = results.getJSONObject(i);
-                        Integer x = id_pair.getInt("id");
-                        String y = id_pair.getString("name");
-                        genres.put(x, y);
-                    }
-                } catch (JSONException e) {
-                    Log.e(TAG, "Hit json exception", e);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.d(TAG, "Unsuccessful retrieval of 'Genre List'");
-            }
-        });
-
-        client.get(NOW_PLAYING_URL, new JsonHttpResponseHandler() {
+        // Retrieval of the 'Now Playing' movies (along w/ basic information)
+        MovieDatabaseClient.get(NOW_PLAYING_URL, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 Log.d(TAG, "Successful retrieval of 'Now Playing' Movies");
@@ -89,7 +59,28 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray results = jsonObject.getJSONArray("results");
                     Log.i(TAG, "Results: " + results.toString());
                     movies.addAll(Movie.fromJsonArray(results));
-                    movieAdapter.notifyDataSetChanged();
+
+                    // Retrieval of extra information
+                    for (int i = 0; i < movies.size(); i++) {
+                        final Movie movie = movies.get(i);
+                        MovieDatabaseClient.get(movie.getMovie_id() + API_KEY, new JsonHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                                JSONObject movieObject = json.jsonObject;
+                                try {
+                                    movie.setExtraInfo(movieObject);
+                                    movieAdapter.notifyDataSetChanged();
+                                } catch (JSONException e) {
+                                    Log.e(TAG, "Error occurred in retrieving movie's information", e);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                                Log.d(TAG, "Unsuccessful retrieval of 'Genre List'");
+                            }
+                        });
+                    }
                     Log.i(TAG, "Movies: " + movies.size());
                 } catch (JSONException e) {
                     Log.e(TAG, "Hit json exception", e);

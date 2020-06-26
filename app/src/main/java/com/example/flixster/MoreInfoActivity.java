@@ -15,18 +15,21 @@ import com.example.flixster.models.Movie;
 import org.parceler.Parcels;
 
 import java.util.List;
-import java.util.Map;
+
+import okhttp3.Headers;
 
 public class MoreInfoActivity extends AppCompatActivity {
+
     // The movie being on which to display more information
     Movie movie;
-    Map<Integer, String> genreIDs;
 
     // The viewable objects
     TextView tvTitle;
     TextView tvOverview;
+    TextView tvTagline;
     TextView tvDate;
     TextView tvGenre;
+    TextView tvRuntime;
     RatingBar rbVoteAverage;
     ImageView ivPoster;
 
@@ -38,27 +41,47 @@ public class MoreInfoActivity extends AppCompatActivity {
         // Resolve the view objects
         tvTitle = findViewById(R.id.tvTitle);
         tvOverview = findViewById(R.id.tvOverview);
+        tvTagline = findViewById(R.id.tvTagline);
+
+        tvDate = findViewById(R.id.tvDate);
+        tvRuntime = findViewById(R.id.tvRuntime);
+
+        tvGenre = findViewById(R.id.tvGenre);
+
         rbVoteAverage = findViewById(R.id.rbVoteAverage);
         ivPoster = findViewById(R.id.ivPoster);
-        tvDate = findViewById(R.id.tvDate);
-        tvGenre = findViewById(R.id.tvGenre);
+
 
         // Retrieve the movie passed in via intent
         movie = Parcels.unwrap(getIntent().getParcelableExtra(Movie.class.getSimpleName()));
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", movie.getTitle()));
 
-        // Retrieve genre list
-        genreIDs = Parcels.unwrap(getIntent().getParcelableExtra(MainActivity.GENRES));
 
-        // Set the title and overview
-        tvTitle.setText(movie.getTitle());
+        // Set the title (and year), overview, and tagline
+        tvTitle.setText(String.format("%s (%s)", movie.getTitle(), movie.getDate().substring(0, 4)));
         tvOverview.setText(movie.getOverview());
-        tvDate.setText(String.format("Release Date: %s", movie.getDate()));
+        tvTagline.setText(movie.getTagline());
+
+        // Set the date in the following format: MM/DD/YYYY
+        tvDate.setText(String.format("%s/%s/%s", movie.getDate().substring(5, 7), movie.getDate().substring(8), movie.getDate().substring(0, 4)));
+
+        // Set the runtime in the following format: #h #m
+        tvRuntime.setText(String.format("%sh %sm", (int)(movie.getRuntime() / 60), movie.getRuntime() % 60));
+
+        // Set the movie's genre(s)
+        List<String> genres = movie.getGenres();
+        String g = "";
+        for (int i = 0; i < genres.size(); i++) {
+            g = g + genres.get(i);
+            if (i < genres.size() - 1) g = g + ", ";
+        }
+        tvGenre.setText(g);
 
         // Convert voter average from 0-10 to 0-5 by dividing by 2
         float voteAverage = movie.getVoteAverage().floatValue();
         rbVoteAverage.setRating(voteAverage > 0 ? voteAverage / 2.0f : voteAverage);
 
+        // Set poster/backdrop movie image
         // By default phone is in portrait and therefore we use backdrop image
         String imageUrl = movie.getBackdropPath();
         int placeholder = R.drawable.flicks_backdrop_placeholder;
@@ -69,13 +92,5 @@ public class MoreInfoActivity extends AppCompatActivity {
             placeholder = R.drawable.flicks_movie_placeholder;
         }
         Glide.with(this).load(imageUrl).placeholder(placeholder).into(ivPoster);
-
-        List<Integer> moviesGenres = movie.getGenres();
-        String g = "";
-        for (int i = 0; i < moviesGenres.size(); i++) {
-            g = g + genreIDs.get(moviesGenres.get(i));
-            if (i < moviesGenres.size() - 1) g = g + ", ";
-        }
-        tvGenre.setText(g);
     }
 }

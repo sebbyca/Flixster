@@ -8,32 +8,29 @@ import org.parceler.Parcel;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Headers;
+
 @Parcel // annotation indicates class is Parcelable
 public class Movie {
+
+    int movie_id;
 
     String backdropPath;
     String posterPath;
     String title;
     String overview;
+
+    String tagline;
     String date;
     Double voteAverage;
-    List<Integer> genreIDs;
+    int runtime;
+    List<String> genres;
 
     public Movie() {}
 
-    public Movie(JSONObject jsonObject) throws JSONException {
-        backdropPath = jsonObject.getString("backdrop_path");
-        posterPath = jsonObject.getString("poster_path");
-        title = jsonObject.getString("title");
-        overview = jsonObject.getString("overview");
-        voteAverage = jsonObject.getDouble("vote_average");
-        date = jsonObject.getString("release_date");
-
-        genreIDs = new ArrayList<>();
-        JSONArray genres = jsonObject.getJSONArray("genre_ids");
-        for (int i = 0; i < genres.length(); i++) {
-            genreIDs.add(genres.getInt(i));
-        }
+    public Movie(JSONObject movieObject) throws JSONException {
+        // First GET call retrieves a movie's ID (+ other crucial information)
+        movie_id = movieObject.getInt("id");
     }
 
     public static List<Movie> fromJsonArray(JSONArray movieJsonArray) throws JSONException {
@@ -42,6 +39,26 @@ public class Movie {
             movies.add(new Movie(movieJsonArray.getJSONObject(i)));
         }
         return movies;
+    }
+
+    public void setExtraInfo(JSONObject movieObject) throws JSONException {
+        backdropPath = movieObject.getString("backdrop_path");
+        posterPath = movieObject.getString("poster_path");
+
+        title = movieObject.getString("title");
+        overview = movieObject.getString("overview");
+
+        tagline = movieObject.getString("tagline");
+
+        voteAverage = movieObject.getDouble("vote_average");
+        date = movieObject.getString("release_date");
+        runtime = movieObject.getInt("runtime");
+
+        genres = new ArrayList<>();
+        JSONArray pairs = movieObject.getJSONArray("genres");
+        for (int i = 0; i < pairs.length(); i++) {
+            genres.add(pairs.getJSONObject(i).getString("name"));
+        }
     }
 
     public Double getVoteAverage() {
@@ -68,7 +85,19 @@ public class Movie {
         return date;
     }
 
-    public List<Integer> getGenres() {
-        return genreIDs;
+    public List<String> getGenres() {
+        return genres;
+    }
+
+    public int getMovie_id() {
+        return movie_id;
+    }
+
+    public String getTagline() {
+        return tagline;
+    }
+
+    public int getRuntime() {
+        return runtime;
     }
 }
