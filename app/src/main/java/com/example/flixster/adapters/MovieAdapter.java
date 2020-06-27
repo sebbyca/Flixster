@@ -8,12 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.flixster.MainActivity;
 import com.example.flixster.MoreInfoActivity;
 import com.example.flixster.R;
 import com.example.flixster.models.Movie;
@@ -28,17 +30,28 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     Context context;
     List<Movie> movies;
+    String dark;
 
-    public MovieAdapter(Context context, List<Movie> movies) {
+    int bg_color;
+    int title_color;
+    int context_color;
+
+    public MovieAdapter(Context context, List<Movie> movies, String dark) {
         this.context = context;
         this.movies = movies;
+        this.dark = dark;
+
+        bg_color = dark.equals("true") ? MainActivity.DARK_THEME_BACKGROUND : MainActivity.LIGHT_THEME_BACKGROUND;
+        title_color = dark.equals("true") ? MainActivity.DARK_THEME_HEADERS : MainActivity.LIGHT_THEME_HEADERS;
+        context_color = dark.equals("true") ? MainActivity.DARK_THEME_TEXT : MainActivity.LIGHT_THEME_TEXT;
     }
 
-    // Usually involves inflating a layout from XML and returning the holder
+    // Inflates the layout from XML and returning the holder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d("MovieAdapter", "onCreateViewHolder");
+//        MainActivity.
         View movieView = LayoutInflater.from(context).inflate(R.layout.item_movie, parent, false);
         return new ViewHolder(movieView);
     }
@@ -54,6 +67,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         holder.bind(movie);
     }
 
+    public void setTheme(int bg, int title, int context, String dark) {
+        this.bg_color = bg;
+        this.title_color = title;
+        this.context_color = context;
+        this.dark = dark;
+    }
+
     // Returns the total count of items in the list
     @Override
     public int getItemCount() {
@@ -66,11 +86,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         TextView tvOverview;
         ImageView ivPoster;
 
+        RelativeLayout rlView;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvOverview = itemView.findViewById(R.id.tvOverview);
             ivPoster = itemView.findViewById(R.id.ivPoster);
+
+            rlView = itemView.findViewById(R.id.rlView);
 
             // Creates an on-click listener for each IV
             itemView.setOnClickListener(this);
@@ -79,6 +103,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         public void bind(Movie movie) {
             tvTitle.setText(movie.getTitle());
             tvOverview.setText(movie.getOverview());
+
+            // Setting colors as appropriate w/ theme
+            rlView.setBackgroundColor(bg_color);
+            tvTitle.setTextColor(title_color);
+            tvOverview.setTextColor(context_color);
 
             // By default phone is in portrait and therefore we use poster image
             String imageUrl = movie.getPosterPath();
@@ -111,6 +140,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
                 // Serialize the movie using parceler, use its short name as a key
                 intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
+                intent.putExtra("THEME", Parcels.wrap(dark));
 
                 // Display the activity
                 context.startActivity(intent);

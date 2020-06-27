@@ -23,6 +23,8 @@ public class Movie {
     String tagline;
     String date;
     Double voteAverage;
+
+    String videoKey;
     int runtime;
     List<String> genres;
 
@@ -61,16 +63,24 @@ public class Movie {
         }
     }
 
+    public void setVideoKey(String videoKey) {
+        this.videoKey = videoKey;
+    }
+
+    public String getVideoKey() {
+        return videoKey;
+    }
+
     public Double getVoteAverage() {
         return voteAverage;
     }
 
     public String getBackdropPath() {
-        return String.format("https://image.tmdb.org/t/p/w342/%s", backdropPath);
+        return String.format("https://image.tmdb.org/t/p/original/%s", backdropPath);
     }
 
     public String getPosterPath() {
-        return String.format("https://image.tmdb.org/t/p/w342/%s", posterPath);
+        return String.format("https://image.tmdb.org/t/p/original/%s", posterPath);
     }
 
     public String getTitle() {
